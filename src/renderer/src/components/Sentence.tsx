@@ -43,6 +43,8 @@ function Sentence({ sentence, id }): JSX.Element {
 
         }
 
+        return () => null
+
     }, [setSelectedFile, updateSentenceAndImage])
 
     const handleFile = (e) => {
