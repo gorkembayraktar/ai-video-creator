@@ -149,6 +149,17 @@ export const VideoWithAi = async ( workPath, {tokens, elevenlabs, sentences, bac
             
 
             const status = await textToImage2(sentence.text, sentence.aisrc)
+
+            if(!status){
+                callback(status);
+
+                if(status?.status == "invalid_key"){
+                    return {
+                        status: VideoResult.ERROR,
+                        error: status
+                    }
+                }
+            }
             
             callback(`${parseInt(index) + 1}.resim ${status ? 'oluşturuldu': 'oluşturulamadı'}`)
 

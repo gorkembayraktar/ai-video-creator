@@ -29,7 +29,7 @@ export const textToImage2 = async (text, outputPath, notEng = true) => {
         const body = Readable.fromWeb(response.body)
         await writeFile(outputPath, body)
 
-       return true;
+       return result;
     })
     .catch((error) => {
       console.error(error)

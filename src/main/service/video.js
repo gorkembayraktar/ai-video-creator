@@ -201,8 +201,11 @@ export const Converter = async (workPath, audioPath, text, imagePath) => {
 
     // Create drawtext filter strings for each line
     const drawTextFilters = lines.map((line, index) => {
+
         return `drawtext=text='${escapeSpecialCharacters(line)}':fontfile=${fontFile}:fontcolor=${textColor}:fontsize=${fontSize}:x=(w-text_w)/2:y=h-(text_h*${lines.length})-${(minHeight - index - 1) *(fontSize+10)}:box=1:boxcolor=${boxColor}`;
     }).join(',');
+
+    console.log(drawTextFilters);
 
     // Create zoompan filter for image
     // scale=-2:10*ih,
@@ -415,6 +418,7 @@ export const Merge = async (workPath, videos, soundMp3, volume=0.5, callback) =>
 
 // Özel karakterleri kaçırtan bir fonksiyon
 export function escapeSpecialCharacters(text) {
+    text = text.replace(/[^a-zA-Z0-9ıçöğüİÇÖĞÜŞş\.,:;!?\"\' ]/g, "");
     return text
     .replaceAll("'","")
     .replaceAll("\\\\", "\\\\\\\\\\\\\\\\").replaceAll("'", "'\\\\\\\\\\\\\''").replaceAll("%", "\\\\\\\\\\\\%").replaceAll(":", "\\\\\\\\\\\\:");
