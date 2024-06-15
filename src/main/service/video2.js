@@ -73,8 +73,14 @@ export const VideoWithAi = async ( workPath, {tokens, elevenlabs, sentences, bac
     callback(workPath)
 
     let tokenIndex = 0;
+
+    let maxError = 5;
+    let errorCount = 0;
+
       // sesleri al
-    for(const sentence of sentences){
+    for(let i = 0; i < sentences.length;){
+
+        const sentence = sentences[i];
 
         if(tokenIndex >= tokens.length){
 
@@ -85,11 +91,13 @@ export const VideoWithAi = async ( workPath, {tokens, elevenlabs, sentences, bac
         }
 
         let next = false;
+
+       
         
 
         do{
             try{
-                callback(`"${sentence.text}" mp3 dosyası oluşturuluyor`);
+                callback(`"${sentence.text}" mp3 dosyası oluşturuluyor[${tokens[tokenIndex]}]`);
                 const result = await textToVoice(tokens[tokenIndex] ,sentence.text, {
                         voice: elevenlabs.voice,
                         model_id: elevenlabs.model_id,
@@ -107,15 +115,29 @@ export const VideoWithAi = async ( workPath, {tokens, elevenlabs, sentences, bac
                 sentence.local = result;
 
                 save();
+
+                i++;
     
             }catch(err){
                 // sonraki tokene geç
                 console.error(err)
                 tokenIndex++;
+                errorCount++;
                 next = true;
             }
             
-        }while(next && tokenIndex < tokens.length - 1 );
+        }while(
+            next && 
+            tokenIndex <= tokens.length - 1 &&
+            errorCount < maxError
+        );
+    }
+
+    if(errorCount == maxError){
+        callback("Max ses üretim denemesi aşıldı.")
+        return {
+            status: VideoResult.ERROR
+        }
     }
 
     try{
