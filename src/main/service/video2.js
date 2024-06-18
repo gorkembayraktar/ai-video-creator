@@ -7,9 +7,11 @@ import { textToVoice } from "./voice.js";
 import { v4 as uuid } from "uuid";
 
 import {VideoResult} from './define/video.js'
-import { textToImage } from "./textToImage.js";
+import { textToImage, textToImageToken } from "./textToImage.js";
 import { Converter, Merge } from "./video.js";
 import { textToImage2 } from './textToImage2.js';
+
+import { createToken } from './stabilityToken.js';
 
 
 
@@ -18,7 +20,7 @@ const saveData = (path, data) => {
     fs.writeFileSync(path, JSON.stringify(data, null, 2));
 }
 
-export const VideoWithAi = async ( workPath, {tokens, elevenlabs, sentences, background}, callback) => {
+export const VideoWithAi = async ( workPath, {tokens, stabilityTokens, elevenlabs, sentences, background}, callback) => {
 
     // workpath if not exists then create
     fs.mkdirSync(workPath, { recursive: true });
@@ -141,28 +143,44 @@ export const VideoWithAi = async ( workPath, {tokens, elevenlabs, sentences, bac
     }
 
     try{
+
+      
+        let stabilityTokenIndex = 0;
         // videoları oluştur
         for(const [index, sentence] of Object.entries(sentences)){
             // ai image
 
             sentence.aisrc = path.join(workPath, uuid() + ".png");
             
+            let status = false;
+            do{
 
-            const status = await textToImage2(sentence.text, sentence.aisrc)
+                if(stabilityTokenIndex >= stabilityTokens.length){
 
-            if(!status){
-                callback(status);
-
-                if(status?.status == "invalid_key"){
+                    callback("Görüntü dosyası üretilemedi, token kalmadı.");
                     return {
-                        status: VideoResult.ERROR,
-                        error: status
+                        status: VideoResult.TOKEN_STOCK_OUT
                     }
                 }
-            }
-            
-            callback(`${parseInt(index) + 1}.resim ${status ? 'oluşturuldu': 'oluşturulamadı'}`)
 
+                callback("Görüntü dosyası için token:"+stabilityTokens[stabilityTokenIndex]);
+                status = await textToImageToken(stabilityTokens[stabilityTokenIndex], sentence.text, sentence.aisrc)
+
+                if(!status){
+                   stabilityTokenIndex++;
+                }
+
+                callback(`${parseInt(index) + 1}.resim ${status ? 'oluşturuldu': 'oluşturulamadı'}`)
+
+
+            }while(
+                !status &&
+                stabilityTokenIndex < stabilityTokens.length
+            );
+
+          
+            
+           
             save();
           
             const output = await Converter(

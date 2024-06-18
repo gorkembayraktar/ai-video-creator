@@ -12,19 +12,19 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import DeleteIcon from '@mui/icons-material/Delete';
-import useTokenStore from './../store/tokenStore'
+import useStabilityStore from './../store/stabilityStore'
 import { Box, ButtonGroup, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, TextField } from '@mui/material';
 import ReplayIcon from '@mui/icons-material/Replay';
-import { getSubscription } from '../thirdparty/elevenlabs/api';
+import { getBalance } from '../thirdparty/stability-ai/api';
 import { useAlert } from '../hooks/useAlert'
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function Token() {
+export default function StabilityToken() {
 
-  const { menuOpen: open, setMenuOpen, tokenList, addToken, removeToken } = useTokenStore((state) => (
+  const { menuOpen: open, setMenuOpen, tokenList, addToken, removeToken } = useStabilityStore((state) => (
     {
       menuOpen: state.menuOpen,
       tokenList: state.tokenList,
@@ -49,7 +49,7 @@ export default function Token() {
   }, [open])
 
   const tokenDetails = async () => {
-    const promises = tokenList.map(async (token) => ({ token: token, data: await getSubscription(token) }));
+    const promises = tokenList.map(async (token) => ({ token: token, data: await getBalance(token) }));
     const data = await Promise.all(promises);
     const format = {};
     data.forEach(item => {
@@ -69,8 +69,8 @@ export default function Token() {
 
   const handleSubmit = async (data) => {
     addToken(data.token)
-    const sbs = await getSubscription(data.token);
-    if (!sbs.character_count) {
+    const sbs = await getBalance(data.token);
+    if (!sbs.hasOwnProperty('credits')) {
       error('Servise erişilemedi');
     }
     setTokenDetail((state) => {
@@ -89,7 +89,7 @@ export default function Token() {
     })
   }
   const handleReplay = async (token) => {
-    const sbs = await getSubscription(token);
+    const sbs = await getBalance(token);
     setTokenDetail((state) => {
       const copy = { ...state };
       copy[token] = sbs;
@@ -118,7 +118,7 @@ export default function Token() {
               <CloseIcon />
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Elevenlabs Token Listesi
+              Stability-ai Token Listesi
             </Typography>
             <Button autoFocus color="success" variant='contained' onClick={handleAdd}>
               Yeni Ekle
@@ -127,7 +127,7 @@ export default function Token() {
         </AppBar>
         <List>
           <Box boxShadow={1} color="InfoText" sx={{ textAlign: 'center', p: 1 }}>
-            https://elevenlabs.io/app/speech-synthesis adresinden api key alınız.
+            https://platform.stability.ai/account/keys adresinden api key alınız.
           </Box>
 
           {
@@ -143,13 +143,14 @@ export default function Token() {
   );
 }
 
+
 const TokenItem = ({ token, data, remove, replay }) => {
 
   const errorText = <Typography fontSize={12} color="error">{"Servise erişilemedi"}</Typography>;
-  const successText = `${Math.round(data.character_count / data.character_limit * 100)}%  karakter kullanıldı. (${data.character_count} / ${data.character_limit})`;
 
+  const successText = `Krediniz: ${data.credits}`;
 
-  const text = data.character_count ? successText : errorText;
+  const text = data.hasOwnProperty('credits') ? successText : errorText;
 
   return <>
     <ListItem

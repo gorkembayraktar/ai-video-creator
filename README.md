@@ -1,34 +1,27 @@
-# ai-video
+# Yapay Zeka İle Video Oluştur
+    Hikayeleri videolaştırmak çok basit.
 
-An Electron application with React and TypeScript
+# Gösterim
 
-## Recommended IDE Setup
+<iframe width="560" height="315" src="https://www.youtube.com/embed/2JLDjFp-NZY?si=6RXuzvPSz966rEOy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+## İhtiyacınız olanlar;
+    - Elevanlabs token
+    - Stability.ai token
 
-## Project Setup
+Hikayenizi yazın o sizin için video kurgusunu hazırlasın.
 
-### Install
 
-```bash
-$ npm install
-```
 
-### Development
+### Görseller
 
-```bash
-$ npm run dev
-```
+![Anasayfa](/doc/1.png "")
 
-### Build
+![Elevanlabs Token Ayar](/doc/2.png "")
 
-```bash
-# For windows
-$ npm run build:win
+![Elevanlabs Ses Ayar](/doc/4.png "")
 
-# For macOS
-$ npm run build:mac
+![Stability ai Token Ayar](/doc/3.png "")
 
-# For Linux
-$ npm run build:linux
-```
+![Video arkaplan ses](/doc/5.png "")
+

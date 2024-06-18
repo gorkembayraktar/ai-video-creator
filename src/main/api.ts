@@ -42,6 +42,7 @@ ipcMain.on("create-video-init", async(event, data) => {
         workPath,
         {
             tokens: data.tokens,
+            stabilityTokens: data.stabilityTokens,
             elevenlabs: data.elevenlabs,
             sentences: data.sentences,
             background: {

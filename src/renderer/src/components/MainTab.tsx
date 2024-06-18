@@ -10,6 +10,9 @@ import SelectBackgroundMusic from '@renderer/steps/SelectBackgroundMusic';
 import BackdropCustom from './BackdropCustom';
 
 import useGlobalStore from './../store/globalStore'
+import useStabilityStore from './../store/stabilityStore'
+
+
 import useTokenStore from './../store/tokenStore'
 import { useAlert } from '../hooks/useAlert';
 import { ipcRenderer } from 'electron';
@@ -76,6 +79,12 @@ export default function MainTab() {
         }
     ));
 
+    const { tokenList: stabilityTokenList } = useStabilityStore((state) => (
+        {
+            tokenList: state.tokenList
+        }
+    ));
+
 
     const { error } = useAlert();
 
@@ -121,6 +130,7 @@ export default function MainTab() {
         const send = {
             sentences: storyList.map(s => ({ text: s })),
             tokens: [...tokenList],
+            stabilityTokens: [...stabilityTokenList],
             backgroundFile: { src: backgroundFile?.src },
             backgroundVolume: backgroundVolume / 100,
             elevenlabs: {
